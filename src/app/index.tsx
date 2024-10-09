@@ -6,6 +6,7 @@ import { mainColor } from '../styles';
 import { Formik } from "formik";
 import * as Yup from 'yup';
 import { Link, router } from 'expo-router';
+import { useUserStore } from '@/store/user-store';
 
 export interface LoginScreenProps {
 }
@@ -14,6 +15,7 @@ export default function LoginScreen (props: LoginScreenProps) {
     // Obtendo a altura da tela
     const { height, width } = useWindowDimensions(); 
     const [result, setResult] = useState('');
+    const {user, setUser} = useUserStore();
     
     // ValidationYup
     const yupValidation = Yup.object({
@@ -22,11 +24,12 @@ export default function LoginScreen (props: LoginScreenProps) {
     })
 
     // RegisterFormik
-    const handleLogin = async ({name, email, password, confirmPassword}: any) => {
+    const handleLogin = async ({email, password}: any) => {
         await new Promise(resolve => setTimeout(resolve, 1000));
 
         if(email === 'teste@gmail.com'){    // Simulando que já existe esse e-mail
             setResult('Logado com sucesso! ✅');
+            // setUser({name, email});
             router.replace("/home");
         } else{
             setResult('Error, usuário não existe!');

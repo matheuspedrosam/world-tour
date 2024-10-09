@@ -4,12 +4,12 @@ export interface CardComponentProps {
     img: string,
     name: string,
     description: string,
-    width?: number
+    width: number
 }
 
 export function CardComponent (props: CardComponentProps) {
     return (
-        <View style={styles.card}>
+        <View style={[{ width: props.width }, styles.card ]}>
             <TouchableOpacity style={{height: '100%'}}>
                 <Image style={styles.cardImg} src={props.img}></Image>
                 <Text style={styles.cardName}>{props.name}</Text>
@@ -26,7 +26,6 @@ const styles = StyleSheet.create({
         borderColor: '#f3f3f3',
         borderWidth: 1,
         height: 300,
-        width: 250,
         marginRight: 10,
         padding: 10,
         borderRadius: 10,

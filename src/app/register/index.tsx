@@ -7,6 +7,7 @@ import { mainColor } from '../../styles';
 import { Formik } from "formik";
 import * as Yup from 'yup';
 import { Link, router } from 'expo-router';
+import { useUserStore } from '@/store/user-store';
 
 export interface RegisterScreenProps {
 }
@@ -14,6 +15,7 @@ export interface RegisterScreenProps {
 export default function RegisterScreen (props: RegisterScreenProps) {
     const [checked, setChecked] = useState(false);
     const [result, setResult] = useState('');
+    const {user, setUser} = useUserStore();
     // Obtendo a altura da tela
     const { height, width } = useWindowDimensions(); 
     
@@ -35,7 +37,8 @@ export default function RegisterScreen (props: RegisterScreenProps) {
         if(email === 'teste@gmail.com'){    // Simulando que já existe esse e-mail
             setResult('Error, usuário já cadastrado!');
         } else{
-            setResult('Registado com sucesso! ✅');
+            setResult('Registrado com sucesso! ✅');
+            setUser({name, email});
             router.replace("/home");
         }
     };

@@ -10,6 +10,7 @@ import { CardComponent } from '../../components/cardComponent';
 import { SectionTitle } from '../../components/sectionTitle';
 import logo from "../../assets/imgs/logo-2.png"
 import { Link } from 'expo-router';
+import { useUserStore } from '@/store/user-store';
 
 export interface HomeScreenProps {
 }
@@ -17,10 +18,12 @@ export interface HomeScreenProps {
 const initialCity = "maceio";
 const initialCategory = "iconics";
 
+
 export default function HomeScreen (props: HomeScreenProps) {
     const [places, setPlaces] = useState([])
     const [city, setCity] = useState(initialCity);
     const [category, setCategory] = useState(initialCategory);
+    const {user, setUser} = useUserStore();
 
     useEffect(() => {
         setPlaces(getPlaces(city, category));
@@ -34,7 +37,7 @@ export default function HomeScreen (props: HomeScreenProps) {
             {/* Search City */}
             <View style={styles.inputIconContainer}>
                 <Icon name='search' color={mainColor}></Icon>
-                <TextInput style={styles.input} placeholder='Pesquisar'></TextInput>
+                <TextInput style={styles.input} placeholder='Pesquisar cidade'></TextInput>
             </View>
 
             {/* City Banner */}
@@ -62,7 +65,7 @@ export default function HomeScreen (props: HomeScreenProps) {
                     data={places}
                     renderItem={ ( place: any ) => (
                         <Link style={{marginHorizontal: 8}} href={{pathname: "/place", params: {place: JSON.stringify(place.item)}}}>
-                            <CardComponent img={place.item.imgs[0]} name={place.item.name} description={place.item.description} />
+                            <CardComponent width={250} img={place.item.imgs[0]} name={place.item.name} description={place.item.description} />
                         </Link>)
                     }
                     horizontal={true}
@@ -77,7 +80,7 @@ export default function HomeScreen (props: HomeScreenProps) {
                     data={places}
                     renderItem={ ( place: any ) => (
                         <Link style={{marginHorizontal: 8}} href={{pathname: "/place", params: {place: JSON.stringify(place.item)}}}>
-                            <CardComponent img={place.item.imgs[0]} name={place.item.name} description={place.item.description} />
+                            <CardComponent width={250} img={place.item.imgs[0]} name={place.item.name} description={place.item.description} />
                         </Link>)
                     }
                     horizontal={true}
