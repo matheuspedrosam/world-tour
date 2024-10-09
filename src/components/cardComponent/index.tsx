@@ -1,16 +1,16 @@
-import * as React from 'react';
-import { View, Text, StyleSheet, Image, Pressable, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
 
 export interface CardComponentProps {
     img: string,
     name: string,
-    description: string
+    description: string,
+    width?: number
 }
 
 export function CardComponent (props: CardComponentProps) {
     return (
         <View style={styles.card}>
-            <TouchableOpacity style={{height: '100%'}} onPress={() => "Nothing Yet"}>
+            <TouchableOpacity style={{height: '100%'}}>
                 <Image style={styles.cardImg} src={props.img}></Image>
                 <Text style={styles.cardName}>{props.name}</Text>
                 <Text style={styles.cardDescription}>{props.description}</Text>
@@ -21,6 +21,7 @@ export function CardComponent (props: CardComponentProps) {
 
 const styles = StyleSheet.create({
     card: {
+        pointerEvents: 'none',
         backgroundColor: 'white',
         borderColor: '#f3f3f3',
         borderWidth: 1,

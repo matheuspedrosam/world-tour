@@ -1,6 +1,4 @@
 import { Icon } from '@rneui/base';
-import * as React from 'react';
-import { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 
 export interface CategoriesButtonProps {

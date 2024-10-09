@@ -1,5 +1,4 @@
 import { Icon } from '@rneui/base';
-import * as React from 'react';
 import { StyleSheet, TouchableOpacity } from 'react-native';
 import { View } from 'react-native';
 
