@@ -11,6 +11,7 @@ import { SectionTitle } from '../../components/sectionTitle';
 import logo from "../../assets/imgs/logo-2.png"
 import { Link } from 'expo-router';
 import { useUserStore } from '@/store/user-store';
+import Toast from 'react-native-toast-message';
 
 export interface HomeScreenProps {
 }
@@ -26,6 +27,12 @@ export default function HomeScreen (props: HomeScreenProps) {
     const {user, setUser} = useUserStore();
 
     useEffect(() => {
+        Toast.show({
+            type: 'success',
+            text1: 'Logado!',
+            text2: 'Aproveite 🙂',
+            visibilityTime: 3000
+        })
         setPlaces(getPlaces(city, category));
     }, [city, category])
 
