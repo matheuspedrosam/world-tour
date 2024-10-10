@@ -13,10 +13,7 @@ export function Banner (props: any) {
             <PagerView style={{ flex: 1 }} initialPage={0} pageMargin={14}>
             {
                 imgs.map((img: any, index: any) => (
-                    <Pressable 
-                        key={index}
-                        onPress={() => console.log("Nothing")}
-                    >
+                    <Pressable key={index}>
                         <Image
                             style={styles.defaultSize}
                             source={{uri: img}}
