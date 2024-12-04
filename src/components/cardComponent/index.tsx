@@ -1,3 +1,4 @@
+import { Link, useRouter } from 'expo-router';
 import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
 
 export interface CardComponentProps {
@@ -7,27 +8,33 @@ export interface CardComponentProps {
     width: number
 }
 
-export function CardComponent (props: CardComponentProps) {
+export function CardComponent (props: any) {
+    const { place, style } = props;
+    if(!place) return;
+
+    const router = useRouter();
+
+    function handleChangePage(){
+        router.push({pathname: "/place", params: {place: JSON.stringify(place)}})
+    }
+
     return (
-        <View style={[{ width: props.width }, styles.card ]}>
-            <TouchableOpacity style={{height: '100%'}}>
-                <Image style={styles.cardImg} src={props.img}></Image>
-                <Text style={styles.cardName}>{props.name}</Text>
-                <Text style={styles.cardDescription}>{props.description}</Text>
-            </TouchableOpacity>
-        </View>
+        <TouchableOpacity style={[styles.card, style]} onPress={handleChangePage}>
+            <Image style={styles.cardImg} src={place.imgs[0]}></Image>
+            <Text style={styles.cardName}>{place.name}</Text>
+            <Text style={styles.cardDescription}>{place.description}</Text>
+        </TouchableOpacity>
     );
 }
 
 const styles = StyleSheet.create({
     card: {
-        pointerEvents: 'none',
+        width: '48%',
         backgroundColor: 'white',
         borderColor: '#f3f3f3',
-        borderWidth: 1,
-        height: 300,
-        marginRight: 10,
         padding: 10,
+        height: 300,
+        borderWidth: 1,
         borderRadius: 10,
         elevation: 4,
         shadowColor: 'black',

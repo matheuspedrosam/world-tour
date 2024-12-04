@@ -1,7 +1,8 @@
-import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Linking, Alert, Image } from 'react-native';
 import { Banner } from '../../components/placeBanner';
 import { LikeOrDeslikeButton } from '../../components/likeOrDeslikeButton';
 import { useLocalSearchParams } from 'expo-router';
+import logoEcocharge from "../../assets/imgs/Logo Ecocharge.png"
 
 export interface PlaceScreenProps {
 }
@@ -9,6 +10,22 @@ export interface PlaceScreenProps {
 export default function PlaceScreen (props: PlaceScreenProps) {
     const params: any = useLocalSearchParams();
     const place: any = JSON.parse(params["place"]);
+
+    async function openLink(){
+        const url = "https://ecocharge.lojavirtualnuvem.com.br/";
+        try {
+            const supported = await Linking.canOpenURL(url);
+        
+            if (supported) {
+                await Linking.openURL(url); // Abre o link no navegador
+            } else {
+                Alert.alert("Erro", "Não foi possível abrir o link: " + url);
+            }
+        } catch (error) {
+            console.error("Erro ao tentar abrir o link:", error);
+            Alert.alert("Erro", "Ocorreu um erro ao tentar abrir o link.");
+        }
+    }
 
     return (
         <ScrollView>
@@ -41,6 +58,19 @@ export default function PlaceScreen (props: PlaceScreenProps) {
                 {/* LikeOrDeslikeButton */}
                 <LikeOrDeslikeButton/>                               
             </View>
+            <View style={{marginTop: 20, margin: 20}}>
+                <View style={{flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 20}}>
+                    <Image source={logoEcocharge} style={{width: 75, height: 75, borderRadius: 100, borderWidth: 1, borderColor: 'gray'}}/>
+                    <Text style={{fontWeight: 'bold', fontSize: 22}}>Ei, turista!</Text>
+                </View>
+                <Text style={{marginBottom: 5}}>Está afim de nunca deixar de registrar um momento em sua viagem?</Text>
+                <Text style={{marginBottom: 5}}>Conheça, as calças ecocharge 🤩. Com carregadores embutidos e ecológicas.</Text>
+                <View style={{justifyContent: 'center', alignItems: 'center'}}>
+                    <TouchableOpacity style={styles.btnEcocharge} onPress={openLink}>
+                        <Text style={{color: 'white', fontWeight: 500}}>É pra já!</Text>
+                    </TouchableOpacity>
+                </View>
+            </View>
         </ScrollView>
     );
 }
@@ -70,5 +100,16 @@ const styles = StyleSheet.create({
     description:{
         color: 'gray',
         marginBottom: 20,
-    }
+    },
+
+    btnEcocharge: {
+        backgroundColor: '#00bf63',
+        width: '50%',
+        borderRadius: 20,
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: 10,
+        marginTop: 20,
+        marginBottom: 40,
+    },
 });

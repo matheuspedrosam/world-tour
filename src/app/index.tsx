@@ -1,5 +1,5 @@
-import { Fragment, useState } from 'react';
-import { View, Text, Image, StyleSheet, ScrollView, TextInput, Dimensions, useWindowDimensions } from 'react-native';
+import { Fragment, useEffect, useState } from 'react';
+import { View, Text, Image, StyleSheet, ScrollView, TextInput, Dimensions, useWindowDimensions, Alert } from 'react-native';
 import logo from "../assets/imgs/logo-2.png"
 import { Button, CheckBox, Icon } from '@rneui/base';
 import { mainColor } from '../styles';
@@ -7,6 +7,9 @@ import { Formik } from "formik";
 import * as Yup from 'yup';
 import { Link, router } from 'expo-router';
 import { useUserStore } from '@/store/user-store';
+import { onAuthStateChanged, signInWithEmailAndPassword } from 'firebase/auth';
+import { auth, db } from '@/firebase/config';
+import { doc, getDoc } from 'firebase/firestore';
 
 export interface LoginScreenProps {
 }
@@ -16,6 +19,28 @@ export default function LoginScreen (props: LoginScreenProps) {
     const { height, width } = useWindowDimensions(); 
     const [result, setResult] = useState('');
     const {user, setUser} = useUserStore();
+
+    const [error, setError] = useState<string | null>(null);
+    const [loading, setLoading] = useState<boolean | null>(null);
+
+    useEffect(() => {
+        setLoading(true);
+        function handleRedirectUser(){
+            try{
+                onAuthStateChanged(auth, (userCredentials) => {
+                    if (userCredentials) {
+                        setUser(userCredentials);
+                        router.replace("/home");
+                    }
+                })
+            } catch (e){
+                console.log(e);
+            } finally {
+                setLoading(false);
+            }
+        }
+        handleRedirectUser();
+    }, [])
     
     // ValidationYup
     const yupValidation = Yup.object({
@@ -25,17 +50,30 @@ export default function LoginScreen (props: LoginScreenProps) {
 
     // RegisterFormik
     const handleLogin = async ({email, password}: any) => {
-        await new Promise(resolve => setTimeout(resolve, 1000));
-
-        if(email === 'teste@gmail.com'){    // Simulando que já existe esse e-mail
-            setResult('Logado com sucesso! ✅');
-            // setUser({name, email});
-            router.replace("/home");
-        } else{
-            setResult('Error, usuário não existe!');
+        try{
+            signInWithEmailAndPassword(auth, email, password)
+                .then(async (userCredential) => {
+                    setLoading(false);
+                    setError('');
+                    Alert.alert("Sucesso", "Usuário logado com sucesso!");
+                    setUser(userCredential);
+                    router.replace("/home");
+                })
+                .catch((error) => {
+                    let errorMessage = error.message;
+                    if(errorMessage.includes("auth/invalid")){
+                        errorMessage = "Credenciais de acesso inválidas."
+                    }
+                    setError(errorMessage);
+                    setLoading(false);
+                });
+        } catch(e: any){
+            setError(e.message);
+            setLoading(false);
         }
     };
 
+    if(loading) return;
     return (
         <View style={{height: height, width: width}}>
             <ScrollView style={styles.mainContentContainer}>
@@ -67,15 +105,26 @@ export default function LoginScreen (props: LoginScreenProps) {
 
                                 {/* ResultMessages */}
                                 { result && <Text style={styles.resultMessage}>{result}</Text> }
+
+                                {/* Error Messages */}
+                                {error && <Text style={styles.errorMessage}>Erro: {error}</Text>}
                     
                                 {/* Submit Button */}
-                                <Button
-                                    onPress={() => handleSubmit()}
-                                    disabled={isSubmitting}
-                                    containerStyle={styles.buttonContainer} 
-                                    buttonStyle={{paddingVertical: 15}}
-                                    color={mainColor}
-                                >Sign In</Button>
+                                {!loading &&
+                                    <Button
+                                        onPress={() => handleSubmit()}
+                                        containerStyle={styles.buttonContainer} 
+                                        buttonStyle={{paddingVertical: 15}}
+                                        color={mainColor}
+                                    >Entrar</Button>
+                                }
+                                {loading &&
+                                    <Button
+                                        containerStyle={[styles.buttonContainer, {backgroundColor: 'gray'}]} 
+                                        buttonStyle={{paddingVertical: 15}}
+                                        color={mainColor}
+                                    >Aguarde...</Button>
+                                }
 
                                 {/* Navigation */}
                                 <Text style={{marginTop: 60, fontSize: 18, textAlign: 'center'}}>Ainda não possui Cadastro? 
@@ -85,9 +134,12 @@ export default function LoginScreen (props: LoginScreenProps) {
                         )
                     }
                 </Formik>
+
+                {/* LogoPng */}
+                <View style={{alignItems: 'center'}}>
+                    <Image source={logo} style={{height: 40, width: 200, borderRadius: 5, marginTop: 200}} />
+                </View>
             </ScrollView>
-            {/* LogoPng */}
-            <Image source={logo} style={{height: 40, width: 200, borderRadius: 5, position: 'absolute', bottom: 20, left: 20}} />
         </View>
     );
 }
@@ -137,6 +189,10 @@ const styles = StyleSheet.create({
     },
     resultMessage: {
         marginTop: 20,
-    }
+    },
+    errorMessage:{
+        color: 'red',
+        marginBottom: 50,
+    },
 });
 

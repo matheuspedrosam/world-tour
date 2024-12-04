@@ -1,16 +1,24 @@
 import { create } from 'zustand';
+import { auth } from '../firebase/config';
+import { signOut } from '@firebase/auth';
 
-interface User{
-    name: string,
-    email: string
+interface UserState {
+  user: any | null;
+  setUser: (userData: any) => void;
+  logout: () => void;
 }
 
-type UserStore = {
-    user: User | null,
-    setUser: any
-}
-
-export const useUserStore = create<UserStore>((set) => ({
+export const useUserStore = create<UserState>((set) => ({
     user: null,
-    setUser: (user: User) => set(() => ({user}))
-}))
+
+    setUser: (userData: any) => set({user: userData}),
+
+    logout: async () => {
+        try {
+            await signOut(auth);
+            set({ user: null });
+        } catch (error) {
+            console.error("Error signing out:", error);
+        }
+    },
+}));

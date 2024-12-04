@@ -7,12 +7,20 @@ export default function Layout(){
 
   return (
     <Fragment>
-        <Stack>
+        <Stack
+            screenOptions={{
+                headerShown: true,
+                contentStyle: { backgroundColor: '#ffffff' }, // Cor de fundo global para todas as telas do Stack
+                statusBarTranslucent: true,
+                statusBarBackgroundColor: 'white',
+            }}>
             <Stack.Screen name='index' options={{
-                headerShown: false
+                headerShown: false,
+                statusBarBackgroundColor: '#F5F5F5',
             }} />
             <Stack.Screen name='register/index' options={{
-                headerShown: false
+                headerShown: false,
+                statusBarBackgroundColor: '#F5F5F5',
             }} />
 
             <Stack.Screen name='home/index' options={{
@@ -24,7 +32,7 @@ export default function Layout(){
             }} />
 
             <Stack.Screen name='allPlaces/index' options={{
-                headerTitle: params["category"] ? `Todos(as) ${params["category"]} de ${params["city"]}` : 'Todos os Lugares',
+                headerTitle: params["selectedCategory"] ? `Todos(as) ${params["selectedCategory"]} de ${params["selectedCity"]}` : 'Todos os Lugares',
             }} />
         </Stack>
         <Toast />

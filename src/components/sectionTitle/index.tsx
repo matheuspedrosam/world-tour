@@ -13,7 +13,7 @@ export function SectionTitle ({ title, citySelected, categorySelectd }: SectionT
     return (
         <View style={styles.container}>
             <Text style={styles.title}>{title}</Text>
-            <Link href={{pathname: "/allPlaces", params: {city: citySelected, category: categorySelectd}}}>
+            <Link href={{pathname: "/allPlaces", params: {selectedCity: citySelected, selectedCategory: categorySelectd}}}>
                 <TouchableOpacity style={styles.seeMoreContainer}>
                     <Text style={{marginBottom: 2}}>Ver todos</Text>
                     <Icon name='keyboard-arrow-right'/>

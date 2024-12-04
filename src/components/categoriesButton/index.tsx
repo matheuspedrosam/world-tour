@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 
 export interface CategoriesButtonProps {
     name: string,
+    selectedCategory: string,
     icon: string,
     onPress: Function
 }
@@ -13,7 +14,7 @@ export function CategoriesButton (props: CategoriesButtonProps) {
         <TouchableOpacity onPress={(e) => {
             props.onPress();
         }}>
-            <View style={styles.container}>
+            <View style={[styles.container, {backgroundColor: props.name === props.selectedCategory ? '#33CCCC' : '#E1F4F6'}]}>
                 <Icon name={props.icon}></Icon>
                 <Text>{props.name}</Text>
             </View>

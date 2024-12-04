@@ -1,30 +1,36 @@
-import { useState, useEffect } from 'react';
-import { View, StyleSheet, TextInput, Image, ScrollView, FlatList } from 'react-native';
+import { useState, useEffect, Fragment } from 'react';
+import { View, StyleSheet, TextInput, Image, ScrollView, FlatList, Text, Touchable, TouchableOpacity } from 'react-native';
 import { Icon } from '@rneui/base';
 import mczBannerImg from '../../assets/imgs/mcz-al.png'
 import { mainColor } from '../../styles';
 import { CategoriesButton } from '../../components/categoriesButton';
-import { categoriesData } from '../../data/categories';
-import { getPlaces } from '../../data/places';
 import { CardComponent } from '../../components/cardComponent';
 import { SectionTitle } from '../../components/sectionTitle';
 import logo from "../../assets/imgs/logo-2.png"
-import { Link } from 'expo-router';
+import { useRouter } from 'expo-router';
 import { useUserStore } from '@/store/user-store';
 import Toast from 'react-native-toast-message';
+import useFetchData from '@/hooks/useFetchData';
 
 export interface HomeScreenProps {
 }
 
-const initialCity = "maceio";
-const initialCategory = "iconics";
 
 
 export default function HomeScreen (props: HomeScreenProps) {
-    const [places, setPlaces] = useState([])
-    const [city, setCity] = useState(initialCity);
-    const [category, setCategory] = useState(initialCategory);
-    const {user, setUser} = useUserStore();
+    const {user, setUser, logout} = useUserStore();
+
+    const [places, setPlaces] = useState<any>([])
+    const [displayPlaces, setDisplayPlaces] = useState<any>([])
+    const [categories, setCategories] = useState<any>([])
+    const [selectedCity, setSelectedCity] = useState("Maceió");
+    const [selectedCategory, setSelectedCategory] = useState("");
+
+    const router = useRouter();
+
+    const { getData, getDataByQuery } = useFetchData();
+    const [loading, setLoading] = useState<boolean | null>(null);
+
 
     useEffect(() => {
         Toast.show({
@@ -32,9 +38,43 @@ export default function HomeScreen (props: HomeScreenProps) {
             text1: 'Logado!',
             text2: 'Aproveite 🙂',
             visibilityTime: 3000
-        })
-        setPlaces(getPlaces(city, category));
-    }, [city, category])
+        });
+    }, [])
+
+    useEffect(() => {
+        async function getPlacesAndCategories() {
+            setLoading(true);
+            try{
+                const placesData = await getDataByQuery("places", "city", "==", selectedCity);
+                const categoriesData = await getData("categories");
+                setPlaces(placesData);
+                setCategories(categoriesData);
+                setSelectedCategory("Iconicos");
+            } catch (e){
+                console.log(e);
+            } finally {
+                setLoading(false);
+            }
+        }
+        getPlacesAndCategories();
+    }, [selectedCity])
+
+    useEffect(() => {
+        function updateCategory() {
+            setLoading(true);
+            console.log(selectedCategory);
+            
+            const filteredPlaces = places.filter((doc: any) => doc.category === selectedCategory); 
+            setDisplayPlaces(filteredPlaces);
+            setLoading(false);
+        }
+        updateCategory();
+    }, [selectedCategory])
+
+    function handleLogout(){
+        logout();
+        router.replace("/");
+    }
 
     return (
         <ScrollView style={styles.mainContentContainer}>
@@ -55,44 +95,54 @@ export default function HomeScreen (props: HomeScreenProps) {
                 />
             </View>
 
-            {/* Categories List */}
-            <View style={{height: 60, marginTop: 20, marginBottom: 10}}>
-                <FlatList
-                    data={categoriesData}
-                    renderItem={ ( category ) => <CategoriesButton onPress={() => setCategory(category.item.value)} name={category.item.name} icon={category.item.icon} />}
-                    horizontal={true}
-                />
-            </View>
-
-
-            <SectionTitle citySelected={city} categorySelectd={category} title='Recomendados'/>
-
-            <View style={{height: 320, marginTop: 20, marginBottom: 10}}>
-                <FlatList
-                    data={places}
-                    renderItem={ ( place: any ) => (
-                        <Link style={{marginHorizontal: 8}} href={{pathname: "/place", params: {place: JSON.stringify(place.item)}}}>
-                            <CardComponent width={250} img={place.item.imgs[0]} name={place.item.name} description={place.item.description} />
-                        </Link>)
-                    }
-                    horizontal={true}
-                />
-            </View>
-
-            {/* Section Mais Visitados */}
-            <SectionTitle citySelected={city} categorySelectd={category} title='Mais Visitados'/>
-
-            <View style={{height: 320, marginTop: 20, marginBottom: 10}}>
-                <FlatList
-                    data={places}
-                    renderItem={ ( place: any ) => (
-                        <Link style={{marginHorizontal: 8}} href={{pathname: "/place", params: {place: JSON.stringify(place.item)}}}>
-                            <CardComponent width={250} img={place.item.imgs[0]} name={place.item.name} description={place.item.description} />
-                        </Link>)
-                    }
-                    horizontal={true}
-                />
-            </View>
+            {loading && <Text style={{marginTop: 40}}>Carregando...</Text>}
+            {!loading && 
+                <Fragment>
+                    {/* Categories List */}
+                    <View style={{height: 60, marginTop: 20, marginBottom: 10}}>
+                        <FlatList
+                            data={categories}
+                            renderItem={ ( category ) => <CategoriesButton onPress={() => setSelectedCategory(category.item.name)} selectedCategory={selectedCategory} name={category.item.name} icon={category.item.icon} />}
+                            horizontal={true}
+                        />
+                    </View>
+                    <SectionTitle citySelected={selectedCity} categorySelectd={selectedCategory} title='Recomendados'/>
+                    <View style={{height: 320, marginTop: 20, marginBottom: 10}}>
+                        {displayPlaces &&
+                            <FlatList
+                                data={displayPlaces}
+                                renderItem={({ item: place }: {item: any}) => (
+                                    <CardComponent place={place} style={{width: 250, marginRight: 10}} />
+                                )}
+                                keyExtractor={(place) => place.name}
+                                horizontal={true}
+                            />
+                        }
+                    </View>
+                    {/* Section Mais Visitados */}
+                    <SectionTitle citySelected={selectedCity} categorySelectd={selectedCategory} title='Mais Visitados'/>
+                    <View style={{height: 320, marginTop: 20, marginBottom: 10}}>
+                        {displayPlaces &&
+                            <FlatList
+                                data={displayPlaces}
+                                renderItem={({ item: place }: {item: any}) => (
+                                    <CardComponent place={place} style={{width: 250, marginRight: 10}} />
+                                )}
+                                keyExtractor={(place) => place.name}
+                                horizontal={true}
+                            />
+                        }
+                    </View>
+                    
+                    {/* Section Sair */}
+                    <Text style={{color: mainColor, fontWeight: 'bold', fontSize: 20}}>Sair</Text>
+                    <View style={{marginTop: 20, marginBottom: 40, alignItems: 'center'}}>
+                        <TouchableOpacity style={{backgroundColor: mainColor, width: '50%', padding: 10, borderRadius: 10}} onPress={handleLogout}>
+                            <Text style={{fontWeight: 500, color: 'white', textAlign: 'center'}}>Sair</Text>
+                        </TouchableOpacity>
+                    </View>
+                </Fragment>
+            }
         </ScrollView>
     );
 }

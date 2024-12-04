@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Fragment } from 'react';
-import { View, Text, Image, StyleSheet, ScrollView, TextInput, Dimensions, useWindowDimensions } from 'react-native';
+import { View, Text, Image, StyleSheet, ScrollView, TextInput, Dimensions, useWindowDimensions, Alert } from 'react-native';
 import logo from "../../assets/imgs/logo-2.png"
 import { Button, CheckBox, Icon } from '@rneui/base';
 import { mainColor } from '../../styles';
@@ -8,6 +8,8 @@ import { Formik } from "formik";
 import * as Yup from 'yup';
 import { Link, router } from 'expo-router';
 import { useUserStore } from '@/store/user-store';
+import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
+import { auth } from '@/firebase/config';
 
 export interface RegisterScreenProps {
 }
@@ -15,6 +17,8 @@ export interface RegisterScreenProps {
 export default function RegisterScreen (props: RegisterScreenProps) {
     const [checked, setChecked] = useState(false);
     const [result, setResult] = useState('');
+    const [error, setError] = useState<string | null>(null);
+    const [loading, setLoading] = useState<boolean | null>(null);
     const {user, setUser} = useUserStore();
     // Obtendo a altura da tela
     const { height, width } = useWindowDimensions(); 
@@ -32,14 +36,30 @@ export default function RegisterScreen (props: RegisterScreenProps) {
 
     // RegisterFormik
     const handleRegister = async ({name, email, password, confirmPassword}: any) => {
-        await new Promise(resolve => setTimeout(resolve, 1000));
-
-        if(email === 'teste@gmail.com'){    // Simulando que já existe esse e-mail
-            setResult('Error, usuário já cadastrado!');
-        } else{
-            setResult('Registrado com sucesso! ✅');
-            setUser({name, email});
-            router.replace("/home");
+        setLoading(true);
+        try{
+            createUserWithEmailAndPassword(auth, email, password)
+                .then(async (userCredential) => {
+                    await updateProfile(userCredential.user, {
+                        displayName: name,
+                    });
+                    setLoading(false);
+                    setError(null);
+                    Alert.alert("Sucesso", "Usuário criado com sucesso!");
+                    setUser(userCredential);
+                    router.replace("/home");
+                })
+                .catch((error) => {
+                    let errorMessage = error.message;
+                    if(error.message.includes('auth/email')){
+                        errorMessage = "Esse E-mail já esta em uso."
+                    }
+                    setError(errorMessage);
+                    setLoading(false);
+                });
+        }catch(e: any){
+            setError(e.message);
+            setLoading(false);
         }
     };
 
@@ -95,16 +115,26 @@ export default function RegisterScreen (props: RegisterScreenProps) {
                                 
                                 {/* ResultMessages */}
                                 { result && <Text style={styles.resultMessage}>{result}</Text> }
+
+                                {/* Error Messages */}
+                                {error && <Text style={styles.errorMessage}>Erro: {error}</Text>}
                     
                                 {/* Submit Button */}
-                                <Button
-                                    onPress={() => handleSubmit()}
-                                    disabled={isSubmitting}
-                                    containerStyle={styles.buttonContainer} 
-                                    buttonStyle={{paddingVertical: 15}}
-                                    color={mainColor}
-                                >Sign Up</Button>
-
+                                {!loading &&
+                                    <Button
+                                        onPress={() => handleSubmit()}
+                                        containerStyle={styles.buttonContainer} 
+                                        buttonStyle={{paddingVertical: 15}}
+                                        color={mainColor}
+                                    >Registrar</Button>
+                                }
+                                {loading &&
+                                    <Button
+                                        containerStyle={[styles.buttonContainer, {backgroundColor: 'gray'}]} 
+                                        buttonStyle={{paddingVertical: 15}}
+                                        color={mainColor}
+                                    >Aguarde...</Button>
+                                }
                                 <Text style={{marginTop: 60, fontSize: 18, textAlign: 'center'}}>Já possui Cadastro? 
                                     <Link href="/" style={{color: mainColor}}>  Clique Aqui</Link>
                                 </Text>                            
@@ -112,9 +142,12 @@ export default function RegisterScreen (props: RegisterScreenProps) {
                         )
                     }
                 </Formik>
+
+                {/* LogoPng */}
+                <View style={{alignItems: 'center'}}>
+                    <Image source={logo} style={{height: 40, width: 200, borderRadius: 5, marginTop: 100}} />
+                </View>
             </ScrollView>
-            {/* LogoPng */}
-            <Image source={logo} style={{height: 40, width: 200, borderRadius: 5, position: 'absolute', bottom: 20, left: 20}} />
         </View>
     );
 }
@@ -164,5 +197,9 @@ const styles = StyleSheet.create({
     resultMessage: {
         marginTop: 20,
         textAlign: 'center'
-    }
+    },
+    errorMessage:{
+        color: 'red',
+        marginBottom: 50,
+    },
 });
