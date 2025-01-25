@@ -1,27 +1,27 @@
-# World Tour (A melhor maneira de conhecer o mundo!) 🌍
+# World Tour (The best way to meet the world!) 🌍
 <img src="https://github.com/user-attachments/assets/dd0dea4a-42b0-48ac-b45e-4978922429d7"></img>
 ##
 
-<h3>Até mesmo de conhecer a própria cidade melhor, quem nunca esteve no tédio, e não sabia o que fazer? 😵‍💫🥱</h3>
+<h3>Even to meet your own town, who never was bored and didn't know what to do? 😵‍💫🥱</h3>
 
-➡️ Cada Cidade contém suas categorias (Praias, Restaurantes, Shoppings, Boates)...
+➡️ Each city contains its own categories (Beaches, Restaurants, Shopping Malls, Nightclubs, etc.).
 
-⭐ Toda cidade terá a categoria Iconicos (Que são os mais famosos, sem destinção de categoria, fez sentido?) -> Exemplo (Paris: Torre Eiffel, Rio Sena, Museu do Louvre...)
+⭐ Every city will have a category called "Iconic" (featuring the most famous spots, regardless of category—does that make sense?). For example: Paris – Eiffel Tower, Seine River, Louvre Museum...
 
-➡️ Dentro das categorias existem os lugares...
+➡️ Within the categories, there are places.
 
-➡️ Cada Categoria pode ou não ter suas subcategorias (Shoppings > [Restaurantes, cinemas...]
+➡️ Each category may or may not have subcategories (e.g., Shopping Malls > [Restaurants, Cinemas, etc.]).
 
-➡️ Cada lugar terá sua descrição ou informação de contato, como no caso de restaurantes, poderá ter o cardápio, e o botão de entra em contato!
+➡️ Each place will have its own description or contact information. For instance, restaurants may include their menu and a "Contact Us" button!
 
-🔝 Podera ser comentado e visualizado as avalizações daquele lugar também. 😎
+🔝 Users can also leave comments and view reviews for each place. 😎
 
-➡️ Isso é uma mão na roda para o turismo, certo?
+➡️ This is super helpful for tourism, right?
 
-➡️ Também tera um sessão de "blog" para cada cidade onde os turistas poderão deixar dicas para outros turistas! Quem não gosta daquelas diquinas de economizar dindin? 🐷🪙
+➡️ There will also be a "blog" section for each city where tourists can leave tips for other travelers! Who doesn’t love those money-saving hacks? 🐷🪙
 
-🤩 Os Lugares podem ser nossos parceiros, e aparecer na aba "Recomendados"!
+🤩 Places can become our partners and show up in the "Recommended" section!
 
-💸 E o cliente que indicarmos para aquele local (caso seja particular, ganharemos uma comissão)!
+💸 And for any client we refer to a private partner location, we’ll earn a commission!
 
-🙌 Então todo mundo sai feliz!
+🙌 So, everyone ends up happy!
